@@ -1,17 +1,15 @@
 //
 //  Article.swift
-//  NFTAPIDemo
+//  AlamofirePractice
 //
-//  Created by Manabu Shimada on 01/08/2021.
+//  Created by kou yamamoto on 2021/02/09.
 //
 
 import Foundation
 
 struct Article: Codable {
-    let title: String
-    var user: User
-    
-    struct User: Codable {
-        var name: String
-    }
+   let title: String
+    let url: String
+   let user: User
+
 }
