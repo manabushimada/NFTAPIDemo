@@ -14,12 +14,18 @@ struct OpenSea: Codable {
     
 }
 
-
 struct Assets: Codable {
     let name: String
     let id: Int
     let imageUrl: String
     let permalink: String
+    
+    init(name: String, id: Int, image_url: String, permalink: String) {
+        self.name = name
+        self.id = id
+        self.imageUrl = image_url
+        self.permalink = permalink
+    }
 
 }
 
