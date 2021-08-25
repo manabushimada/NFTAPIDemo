@@ -8,7 +8,7 @@ target 'NFTAPIDemo' do
   # Pods for NFTAPIDemo
 
 	pod 'Alamofire', '~> 5.2'
-	pod 'Nuke', '~> 9.0'
+	pod 'Nuke', '~> 10.3.2'
 
 
   target 'NFTAPIDemoTests' do
