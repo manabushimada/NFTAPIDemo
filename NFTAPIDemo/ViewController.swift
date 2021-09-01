@@ -17,7 +17,7 @@ class ViewController: UIViewController {
     var openSea = [OpenSea]()
     var assets = [Assets]()
     
-    let urlString = "https://api.opensea.io/api/v1/assets?order_direction=desc&offset=0&limit=20"
+    let urlString = "https://api.opensea.io/api/v1/assets?order_direction=desc&offset=0&limit=50"
     let method: HTTPMethod = .get
     let parameter = ["": ""]
     let encoding: ParameterEncoding = URLEncoding.default
