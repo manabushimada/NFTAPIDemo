@@ -12,10 +12,8 @@ import Alamofire
 class ViewController: UIViewController {
     
     @IBOutlet weak var nftListTableView: UITableView!
-    
-    
+
     let decoder: JSONDecoder = JSONDecoder()
-    var articles = [Article]()
     var openSea = [OpenSea]()
     var assets = [Assets]()
     
@@ -27,33 +25,7 @@ class ViewController: UIViewController {
     // MARK: setup
     override func viewDidLoad() {
         super.viewDidLoad()
-       
-//        getQiitaArticles()
-        fetchFilms()
-
-    }
-    
-    
-    //MARK:- Alamofire
-    private func getQiitaArticles() {
-        AF.request("https://qiita.com/api/v2/tags/iOS/items", method: method, parameters: parameter).responseJSON { response in
-            
-            print(response.result)
-            
-            switch response.result {
-                    
-            case .success:
-                do {
-                    self.articles = try self.decoder.decode([Article].self, from: response.data!);
-                    self.nftListTableView.reloadData() }
-                catch {
-                    print("decode failed")
-                    
-                }
-            case .failure(let error):
-                print("error", error)
-            }
-        }
+        fetchOpenSea()
     }
 }
 
@@ -61,16 +33,13 @@ class ViewController: UIViewController {
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        articles.count
         self.openSea.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: NFTTableViewCell = tableView.dequeueReusableCell(withIdentifier: "articleCell", for: indexPath) as! NFTTableViewCell
-//        let article = articles[indexPath.row]
-//        cell.set(title: article.title, author: article.user.id, imageUrl: article.user.imageUrl)
-        
         let openSea = self.openSea[indexPath.row]
+        
         cell.set(title: openSea.assets.name, author: String(openSea.assets.id), imageUrl: openSea.assets.imageUrl)
         
         return cell
@@ -79,9 +48,6 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
          let storyboard = UIStoryboard(name: "WebViewController", bundle: nil)
          let webViewController = storyboard.instantiateInitialViewController() as! WebViewController
-//         let article = articles[indexPath.row]
-//         webViewController.url = article.url
-//         webViewController.title = article.title
         
         let openSea = self.openSea[indexPath.row]
         webViewController.url = openSea.assets.permalink
@@ -90,31 +56,20 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
          navigationController?.pushViewController(webViewController, animated: true)
      }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+    
 }
 
 //MARK:- Alamofire
 extension ViewController {
-  func fetchFilms() {
+  func fetchOpenSea() {
     AF.request(urlString)
           .responseJSON { response in
-            
-            print(response.result)
-            
-
-            
-              let decoder: JSONDecoder = JSONDecoder()
-            
-            
-            
               do {
-               // わからん、、、、、、
-                
-                /*
-                self.openSea = try decoder.decode([OpenSea].self, from: response.data!)
-                  print(self.openSea)
- */
                 let aDictionary : NSDictionary? = try JSONSerialization.jsonObject(with: response.data!, options: JSONSerialization.ReadingOptions.mutableContainers) as? NSDictionary
-                print("aDictionary", aDictionary)
+               //print("aDictionary", aDictionary)
                
                 if let arr = aDictionary!["assets"] as? [NSDictionary] {
                     for elem in arr {
@@ -123,12 +78,7 @@ extension ViewController {
                         var id: Int = 0
                         var image_url: String = ""
                         var permalink: String = ""
-                        
-//                        guard let name: String = elem["name"] as? String else {return}
-//                        guard let id: Int = elem["id"] as? Int else {return}
-//                        guard let image_url: String = elem["image_url"] as? String else {return}
-//                        guard let permalink: String = elem["permalink"] as? String else {return}
-                        
+
                         if let name_ = elem["name"] as? String {
                             name = name_
                         }
@@ -137,18 +87,20 @@ extension ViewController {
                         }
                         if let image_url_ = elem["image_url"] as? String {
                             image_url = image_url_
+                            if image_url == "" {
+                                image_url = "https://storage.googleapis.com/opensea-static/Logomark/Logomark-Blue.png"
+                            }
                         }
                         if let permalink_ = elem["permalink"] as? String {
                             permalink = permalink_
                         }
-                        
-                        print("  > id", id)
-                        print("  > name", name)
-                        print("  > image_url", image_url)
-                        print("  > permalink", permalink)
+
+//                        print("  > id", id)
+//                        print("  > name", name)
+//                        print("  > image_url", image_url)
+//                        print("  > permalink", permalink)
                         
                         let assets_ = Assets(name: name, id: id, image_url: image_url, permalink: permalink)
-                        
                         let openSea_ = OpenSea(assets: assets_)
                         self.openSea.append(openSea_)
                         
@@ -156,16 +108,14 @@ extension ViewController {
                     }
                 }
                 
-                print ("count", self.openSea.count)
-                self.nftListTableView.reloadData()
-                
+               // print ("count", self.openSea)
+               self.nftListTableView.reloadData()
+               
                 
               } catch {
                   print("failed")
                   print(error.localizedDescription)
               }
-
-            
       }
   }
 }
